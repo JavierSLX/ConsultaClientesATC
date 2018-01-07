@@ -18,9 +18,9 @@ public class Cliente
     private String direccion;
     private String ciudad;
     private String telefono;
-    private boolean activo;
+    private String activo;
 
-    public Cliente(String clave, String nombre, String direccion, String ciudad, String telefono, boolean activo)
+    public Cliente(String clave, String nombre, String direccion, String ciudad, String telefono, String activo)
     {
         this.clave = clave;
         this.nombre = nombre;
@@ -80,12 +80,12 @@ public class Cliente
         this.telefono = telefono;
     }
 
-    public boolean isActivo()
+    public String getActivo()
     {
         return activo;
     }
 
-    public void setActivo(boolean activo)
+    public void setActivo(String activo)
     {
         this.activo = activo;
     }
@@ -99,7 +99,7 @@ public class Cliente
             {
                 JSONObject jsonObject = array.getJSONObject(i);
                 Cliente cliente = new Cliente(jsonObject.getString("0"), jsonObject.getString("1"), jsonObject.getString("2"), jsonObject.getString("3"),
-                        jsonObject.getString("4"), Boolean.valueOf(jsonObject.getString("5")));
+                        jsonObject.getString("4"), jsonObject.getString("5"));
                 lista.add(cliente);
             }
         }

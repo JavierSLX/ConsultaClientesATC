@@ -67,7 +67,7 @@ public class ListaClientesAdapter extends BaseAdapter
         txtCiudad.setText(getItem(i).getCiudad());
 
         //Checa si el usuario está activo y cambia de color el identificador
-        if (getItem(i).isActivo())
+        if (getItem(i).getActivo().equals("1"))
         {
             txtIdentificador.setText(getItem(i).getClave());
             txtIdentificador.setTextColor(vista.getResources().getColor(R.color.azul));
