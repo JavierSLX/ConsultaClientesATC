@@ -18,17 +18,17 @@ import com.example.morpheus.clientesatc.R;
 public class ListaClientesFragment extends Fragment
 {
     private static final String LLAVE_USUARIO = "USUARIO";
-    private static final String LLAVE_PERMISO = "PERMISO";
+    private static final String LLAVE_VENTA = "PUNTOVENTA";
     private static String usuario_id;
-    private static String permiso_id;
+    private static String puntoVenta_id;
 
     //Instancia al mismo fragmento
-    public static ListaClientesFragment getInstance(String usuario_id, String permiso_id)
+    public static ListaClientesFragment getInstance(String usuario_id, String puntoVenta_id)
     {
         ListaClientesFragment fragment = new ListaClientesFragment();
         Bundle bundle = new Bundle();
         bundle.putString(LLAVE_USUARIO, usuario_id);
-        bundle.putString(LLAVE_PERMISO, permiso_id);
+        bundle.putString(LLAVE_VENTA, puntoVenta_id);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -41,10 +41,11 @@ public class ListaClientesFragment extends Fragment
         if (getArguments() != null)
         {
             usuario_id = getArguments().getString(LLAVE_USUARIO);
-            permiso_id = getArguments().getString(LLAVE_PERMISO);
+            puntoVenta_id = getArguments().getString(LLAVE_VENTA);
         }
     }
 
+    //Coloca el titulo apenas se crea el fragmento
     @Override
     public void onAttach(Context context)
     {
@@ -61,12 +62,11 @@ public class ListaClientesFragment extends Fragment
     }
 
     //Hace referencia a los view
-
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
 
-        Toast.makeText(getContext(), "Usuario: " + usuario_id + " Permiso: " + permiso_id, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Usuario: " + usuario_id + " PuntoVenta: " + puntoVenta_id, Toast.LENGTH_LONG).show();
     }
 }

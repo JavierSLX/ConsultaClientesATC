@@ -23,10 +23,10 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.ILo
 
     //Se comunica con el fragmento Login
     @Override
-    public void comunicacionConLoginFragment(String usuario_id, String acceso_id)
+    public void comunicacionConLoginFragment(String usuario_id, String puntoVenta_id)
     {
         //Inicia el siguiente fragmento
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.contenedorFragment, ListaClientesFragment.getInstance(usuario_id, acceso_id)).addToBackStack(null).commit();
+        transaction.replace(R.id.contenedorFragment, ListaClientesFragment.getInstance(usuario_id, puntoVenta_id)).addToBackStack(null).commit();
     }
 }

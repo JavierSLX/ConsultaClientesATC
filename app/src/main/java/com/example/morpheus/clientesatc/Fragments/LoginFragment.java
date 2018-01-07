@@ -41,7 +41,7 @@ public class LoginFragment extends Fragment implements IBasic, Response.Listener
     //Interfaz que permite comunicar con la actividad
     public static interface ILogin
     {
-        void comunicacionConLoginFragment(String usuario_id, String acceso_id);
+        void comunicacionConLoginFragment(String usuario_id, String puntoVenta_id);
     }
 
     //Coloca el titulo del Fragmento y castea la actividad
@@ -108,7 +108,8 @@ public class LoginFragment extends Fragment implements IBasic, Response.Listener
 
         //Inicia la peticion
         RequestQueue queue = Volley.newRequestQueue(getContext());
-        String consulta = "SELECT * FROM permiso WHERE nick = '" + edtUsuario.getText().toString() + "' AND pwd = '" + edtPass.getText().toString() + "';" ;
+        String consulta = "SELECT p.usuario_id, ptu.puntoVenta_id FROM permiso p, puntoventa_usuario ptu, usuario u WHERE u.id = ptu.usuario_id AND p.usuario_id = u.id " +
+                "AND p.nick = '" + edtUsuario.getText().toString().trim() + "' AND p.pwd = '" + edtPass.getText().toString().trim() + "';" ;
         consulta = consulta.replace(" ", "%20");
         String cadena = "?host=" + HOST + "&db=" + DB + "&usuario=" + USER + "&pass=" + PASS + "&consulta=" + consulta;
         String url = SERVER + RUTA + "consultaGeneral.php" + cadena;
@@ -129,7 +130,7 @@ public class LoginFragment extends Fragment implements IBasic, Response.Listener
             if (response.length() > 0)
             {
                 JSONObject jsonObject = response.getJSONObject(0);
-                comunicacion.comunicacionConLoginFragment(jsonObject.getString("3"), jsonObject.getString("4"));
+                comunicacion.comunicacionConLoginFragment(jsonObject.getString("0"), jsonObject.getString("1"));
             }
             else
             {
@@ -142,6 +143,7 @@ public class LoginFragment extends Fragment implements IBasic, Response.Listener
         }
     }
 
+    //Error en el webservice
     @Override
     public void onErrorResponse(VolleyError error)
     {
