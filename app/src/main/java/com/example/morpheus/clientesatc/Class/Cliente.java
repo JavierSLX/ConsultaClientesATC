@@ -13,6 +13,7 @@ import java.util.List;
 
 public class Cliente
 {
+    private int id;
     private String clave;
     private String nombre;
     private String direccion;
@@ -20,14 +21,25 @@ public class Cliente
     private String telefono;
     private String activo;
 
-    public Cliente(String clave, String nombre, String direccion, String ciudad, String telefono, String activo)
+    public Cliente(int id, String clave, String nombre, String direccion, String ciudad, String telefono, String activo)
     {
+        this.id = id;
         this.clave = clave;
         this.nombre = nombre;
         this.direccion = direccion;
         this.ciudad = ciudad;
         this.telefono = telefono;
         this.activo = activo;
+    }
+
+    public int getId()
+    {
+        return id;
+    }
+
+    public void setId(int id)
+    {
+        this.id = id;
     }
 
     public String getClave()
@@ -98,8 +110,8 @@ public class Cliente
             for (int i = 0; i < array.length(); i++)
             {
                 JSONObject jsonObject = array.getJSONObject(i);
-                Cliente cliente = new Cliente(jsonObject.getString("0"), jsonObject.getString("1"), jsonObject.getString("2"), jsonObject.getString("3"),
-                        jsonObject.getString("4"), jsonObject.getString("5"));
+                Cliente cliente = new Cliente(Integer.parseInt(jsonObject.getString("0")), jsonObject.getString("1"), jsonObject.getString("2"),
+                        jsonObject.getString("3"), jsonObject.getString("4"), jsonObject.getString("5"), jsonObject.getString("6"));
                 lista.add(cliente);
             }
         }

@@ -16,6 +16,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -45,7 +46,8 @@ import java.security.KeyRep;
  * Created by Morpheus on 06/01/2018.
  */
 
-public class ListaClientesFragment extends Fragment implements IBasic, Response.Listener<JSONArray>, Response.ErrorListener, View.OnClickListener
+public class ListaClientesFragment extends Fragment implements IBasic, Response.Listener<JSONArray>, Response.ErrorListener, View.OnClickListener,
+        AdapterView.OnItemClickListener
 {
     private static final String LLAVE_USUARIO = "USUARIO";
     private static final String LLAVE_VENTA = "PUNTOVENTA";
@@ -54,6 +56,7 @@ public class ListaClientesFragment extends Fragment implements IBasic, Response.
     private EditText edtElemento;
     private TextView txtUltimaR;
     private ListView listaClientes;
+    private ListaClientesAdapter adapter;
     private ProgressDialog progressDialog;
     private boolean porNombre = true;
 
@@ -133,8 +136,9 @@ public class ListaClientesFragment extends Fragment implements IBasic, Response.
             }
         });
 
-        //Evento del boton
+        //Evento del boton y la listview
         btConsultar.setOnClickListener(this);
+        listaClientes.setOnItemClickListener(this);
 
         //Arma el dialogo de carga
         //Crea el progressDialog
@@ -212,19 +216,19 @@ public class ListaClientesFragment extends Fragment implements IBasic, Response.
         {
             if (porNombre)
             {
-                consulta = "SELECT CONCAT(p.tipo, '-', cc.numero) AS clave, c.nombre, c.direccion, cd.nombre AS ciudad, c.telefono, cc.activo FROM punto_venta p, cliente c, " +
+                consulta = "SELECT cc.id, CONCAT(p.tipo, '-', cc.numero) AS clave, c.nombre, c.direccion, cd.nombre AS ciudad, c.telefono, cc.activo FROM punto_venta p, cliente c, " +
                         "clave_cliente cc, ciudad cd WHERE p.id = cc.puntoVenta_id AND c.id = cc.cliente_id AND c.ciudad_id = cd.id AND cc.puntoVenta_id = " + puntoVenta_id +
                         " AND c.nombre LIKE '" + edtElemento.getText().toString().trim() + "%25' ORDER BY cc.numero ASC;";
             } else
             {
-                consulta = "SELECT CONCAT(p.tipo, '-', cc.numero) AS clave, c.nombre, c.direccion, cd.nombre AS ciudad, c.telefono, cc.activo FROM punto_venta p, cliente c, " +
+                consulta = "SELECT cc.id, CONCAT(p.tipo, '-', cc.numero) AS clave, c.nombre, c.direccion, cd.nombre AS ciudad, c.telefono, cc.activo FROM punto_venta p, cliente c, " +
                         "clave_cliente cc, ciudad cd WHERE p.id = cc.puntoVenta_id AND c.id = cc.cliente_id AND c.ciudad_id = cd.id AND cc.puntoVenta_id = " + puntoVenta_id +
                         " AND cc.numero LIKE '" + String.format("%1$03d", Integer.valueOf(edtElemento.getText().toString().trim())) + "%25' ORDER BY cc.numero ASC;";
             }
         }
         else
         {
-            consulta = "SELECT CONCAT(p.tipo, '-', cc.numero) AS clave, c.nombre, c.direccion, cd.nombre AS ciudad, c.telefono, cc.activo FROM punto_venta p, cliente c, " +
+            consulta = "SELECT cc.id, CONCAT(p.tipo, '-', cc.numero) AS clave, c.nombre, c.direccion, cd.nombre AS ciudad, c.telefono, cc.activo FROM punto_venta p, cliente c, " +
                     "clave_cliente cc, ciudad cd WHERE p.id = cc.puntoVenta_id AND c.id = cc.cliente_id AND c.ciudad_id = cd.id AND cc.puntoVenta_id = " + puntoVenta_id +
                     " ORDER BY cc.numero ASC;";
         }
@@ -244,7 +248,7 @@ public class ListaClientesFragment extends Fragment implements IBasic, Response.
     {
         if (response.length() > 0)
         {
-            ListaClientesAdapter adapter = new ListaClientesAdapter(getContext(), Cliente.sacarListaClientes(response));
+            adapter = new ListaClientesAdapter(getContext(), Cliente.sacarListaClientes(response));
             listaClientes.setAdapter(adapter);
 
             progressDialog.hide();
@@ -262,5 +266,11 @@ public class ListaClientesFragment extends Fragment implements IBasic, Response.
         Log.i("errorlista", error.toString());
     }
 
-
+    //Cuando se presiona sobre un elemento de la listview
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
+    {
+        int id = (int)adapter.getItemId(i);
+        Toast.makeText(getContext(), "ID: " + String.valueOf(id), Toast.LENGTH_SHORT).show();
+    }
 }

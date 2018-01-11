@@ -42,7 +42,7 @@ public class ListaClientesAdapter extends BaseAdapter
     @Override
     public long getItemId(int i)
     {
-        return i;
+        return lista.get(i).getId();
     }
 
     @Override
