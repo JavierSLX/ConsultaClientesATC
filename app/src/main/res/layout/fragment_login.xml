@@ -24,7 +24,8 @@
         android:layout_height="wrap_content"
         android:hint="Contraseña"
         android:layout_marginTop="10dp"
-        android:inputType="textPassword"/>
+        android:inputType="textPassword"
+        android:fontFamily="sans-serif"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -35,7 +36,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Aceptar"
-            android:layout_centerInParent="true"/>
+            android:layout_centerInParent="true"
+            android:background="@color/colorPrimary"
+            android:textColor="@android:color/white"/>
     </RelativeLayout>
 
 </LinearLayout>

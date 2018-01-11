@@ -21,6 +21,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -51,6 +52,7 @@ public class ListaClientesFragment extends Fragment implements IBasic, Response.
     private static String usuario_id;
     private static String puntoVenta_id;
     private EditText edtElemento;
+    private TextView txtUltimaR;
     private ListView listaClientes;
     private ProgressDialog progressDialog;
     private boolean porNombre = true;
@@ -105,6 +107,7 @@ public class ListaClientesFragment extends Fragment implements IBasic, Response.
         Switch swtElemento = (Switch)view.findViewById(R.id.swtElemento);
         edtElemento = (EditText)view.findViewById(R.id.edtBusqueda);
         listaClientes = (ListView)view.findViewById(R.id.listClientes);
+        txtUltimaR = (TextView)view.findViewById(R.id.txtUltimaR);
 
         //Le da un hint al edittext
         edtElemento.setHint("Nombre");
@@ -132,6 +135,53 @@ public class ListaClientesFragment extends Fragment implements IBasic, Response.
 
         //Evento del boton
         btConsultar.setOnClickListener(this);
+
+        //Arma el dialogo de carga
+        //Crea el progressDialog
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setTitle("Cargando");
+        progressDialog.setMessage("Un momento...");
+        progressDialog.show();
+
+        //Arma la consulta para sacar la última R
+        RequestQueue queue = Volley.newRequestQueue(getContext());
+
+        String consulta = "SELECT CONCAT(p.tipo, '-', cc.numero) AS clave FROM punto_venta p, clave_cliente cc WHERE p.id = cc.puntoVenta_id AND cc.puntoVenta_id = " +
+                puntoVenta_id + " ORDER BY cc.numero DESC LIMIT 1";
+        consulta = consulta.replace(" ", "%20");
+        String cadena = "?host=" + HOST + "&db=" + DB + "&usuario=" + USER + "&pass=" + PASS + "&consulta=" + consulta;
+        String url = SERVER + RUTA + "consultaGeneral.php" + cadena;
+        Log.i("urlUltima", url);
+
+        //Arma la peticion y la pone en cola
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.PUT, url, null, new Response.Listener<JSONArray>()
+        {
+            @Override
+            public void onResponse(JSONArray response)
+            {
+                progressDialog.hide();
+
+                try
+                {
+                    txtUltimaR.setText(response.getJSONObject(0).getString("0"));
+                }
+                catch (JSONException e)
+                {
+                    txtUltimaR.setText("Valor no encontrado");
+                }
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                progressDialog.hide();
+
+                Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        queue.add(request);
     }
 
     @Override
@@ -151,27 +201,32 @@ public class ListaClientesFragment extends Fragment implements IBasic, Response.
 
     private void consultaWebService()
     {
-        //Crea el progressDialog
-        progressDialog = new ProgressDialog(getContext());
-        progressDialog.setTitle("Cargando");
-        progressDialog.setMessage("Un momento...");
+        //Muestra el dialogo de carga
         progressDialog.show();
 
         //Inicia la peticion
         RequestQueue queue = Volley.newRequestQueue(getContext());
 
         String consulta;
-        if (porNombre)
+        if (edtElemento.getText().toString().length() > 0)
         {
-            consulta = "SELECT CONCAT(p.tipo, '-', cc.numero) AS clave, c.nombre, c.direccion, cd.nombre AS ciudad, c.telefono, cc.activo FROM punto_venta p, cliente c, " +
-                    "clave_cliente cc, ciudad cd WHERE p.id = cc.puntoVenta_id AND c.id = cc.cliente_id AND c.ciudad_id = cd.id AND cc.puntoVenta_id = " + puntoVenta_id +
-                    " AND c.nombre LIKE '" + edtElemento.getText().toString().trim() + "%25' ORDER BY cc.numero ASC;";
+            if (porNombre)
+            {
+                consulta = "SELECT CONCAT(p.tipo, '-', cc.numero) AS clave, c.nombre, c.direccion, cd.nombre AS ciudad, c.telefono, cc.activo FROM punto_venta p, cliente c, " +
+                        "clave_cliente cc, ciudad cd WHERE p.id = cc.puntoVenta_id AND c.id = cc.cliente_id AND c.ciudad_id = cd.id AND cc.puntoVenta_id = " + puntoVenta_id +
+                        " AND c.nombre LIKE '" + edtElemento.getText().toString().trim() + "%25' ORDER BY cc.numero ASC;";
+            } else
+            {
+                consulta = "SELECT CONCAT(p.tipo, '-', cc.numero) AS clave, c.nombre, c.direccion, cd.nombre AS ciudad, c.telefono, cc.activo FROM punto_venta p, cliente c, " +
+                        "clave_cliente cc, ciudad cd WHERE p.id = cc.puntoVenta_id AND c.id = cc.cliente_id AND c.ciudad_id = cd.id AND cc.puntoVenta_id = " + puntoVenta_id +
+                        " AND cc.numero LIKE '" + String.format("%1$03d", Integer.valueOf(edtElemento.getText().toString().trim())) + "%25' ORDER BY cc.numero ASC;";
+            }
         }
         else
         {
             consulta = "SELECT CONCAT(p.tipo, '-', cc.numero) AS clave, c.nombre, c.direccion, cd.nombre AS ciudad, c.telefono, cc.activo FROM punto_venta p, cliente c, " +
                     "clave_cliente cc, ciudad cd WHERE p.id = cc.puntoVenta_id AND c.id = cc.cliente_id AND c.ciudad_id = cd.id AND cc.puntoVenta_id = " + puntoVenta_id +
-                    " AND cc.numero LIKE '" + String.format("%1$03d", Integer.valueOf(edtElemento.getText().toString().trim())) + "%25' ORDER BY cc.numero ASC;";
+                    " ORDER BY cc.numero ASC;";
         }
 
         consulta = consulta.replace(" ", "%20");
@@ -187,11 +242,12 @@ public class ListaClientesFragment extends Fragment implements IBasic, Response.
     @Override
     public void onResponse(JSONArray response)
     {
-        progressDialog.hide();
         if (response.length() > 0)
         {
             ListaClientesAdapter adapter = new ListaClientesAdapter(getContext(), Cliente.sacarListaClientes(response));
             listaClientes.setAdapter(adapter);
+
+            progressDialog.hide();
         }
         else
             Toast.makeText(getContext(), "No hay coincidencias", Toast.LENGTH_SHORT).show();

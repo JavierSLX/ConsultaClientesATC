@@ -11,15 +11,38 @@
         android:layout_height="wrap_content"
         android:hint="Elemento"/>
 
-    <Switch
-        android:id="@+id/swtElemento"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:textOn="Nombre"
-        android:textOff="Identificador"
-        android:checked="true"
-        android:layout_marginTop="10dp"/>
+        android:orientation="horizontal"
+        android:layout_marginTop="15dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Última R registrada:"/>
+
+        <TextView
+            android:id="@+id/txtUltimaR"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="R1-001"
+            android:textStyle="bold"/>
+
+        <Switch
+            android:id="@+id/swtElemento"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="right"
+            android:textOn="Nombre"
+            android:textOff="Identificador"
+            android:checked="true"
+            android:layout_marginTop="10dp"/>
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/btConsultar"
@@ -27,7 +50,9 @@
         android:layout_height="wrap_content"
         android:text="Consultar"
         android:layout_gravity="center"
-        android:layout_marginTop="10dp"/>
+        android:layout_marginTop="10dp"
+        android:background="@color/colorPrimary"
+        android:textColor="@android:color/white"/>
 
     <ListView
         android:id="@+id/listClientes"
